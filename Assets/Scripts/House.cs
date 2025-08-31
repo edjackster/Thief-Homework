@@ -10,7 +10,6 @@ public class House : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Entered " + other.gameObject.name);
         if (other.TryGetComponent<Thief>(out var thief) == false)
             return;
         
@@ -19,7 +18,6 @@ public class House : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        Debug.Log("Exited " + other.gameObject.name);
         if (other.TryGetComponent<Thief>(out var thief) == false)
             return;
         

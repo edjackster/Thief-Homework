@@ -18,58 +18,32 @@ public class Alarm : MonoBehaviour
     {
         _audioSource = GetComponent<AudioSource>();
         _step = MinTimeStep / _changeVolumeDuration;
-        Debug.Log(_step);
     }
 
     public void TurnOn()
     {
-        Debug.Log("Turned On");
-        
         if (_coroutine != null)
             StopCoroutine(_coroutine);
         
-        _coroutine = StartCoroutine(TurnUpVolume());
+        _coroutine = StartCoroutine(ChangeVolumeSmoothly(MaxVolume));
     }
 
     public void TurnOff()
     {
-        Debug.Log("Turned Off");
-        
         if (_coroutine != null)
             StopCoroutine(_coroutine);
         
-        _coroutine = StartCoroutine(TurnDownVolume());
+        _coroutine = StartCoroutine(ChangeVolumeSmoothly(MinVolume));
     }
 
-    private IEnumerator TurnUpVolume()
+    private IEnumerator ChangeVolumeSmoothly(float targetVolume)
     {
         var wait = new WaitForSeconds(MinTimeStep);
         
-        while (_audioSource.volume < MaxVolume)
+        while (Mathf.Approximately(_audioSource.volume, targetVolume) == false)
         {
-            Debug.Log(_audioSource.volume);
-            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, MaxVolume, _step);
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, targetVolume, _step);
             yield return wait; 
         }
     }
-
-    private IEnumerator TurnDownVolume()
-    {
-        var wait = new WaitForSeconds(MinTimeStep);
-        
-        while (_audioSource.volume > MinVolume)
-        {
-            Debug.Log(_audioSource.volume);
-            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, MinVolume, _step);
-            yield return wait; 
-        }
-    }
-
-    //private IEnumerator VolumeUp()
-    //{
-    //    while (_isAlarmOn && _audioSource.volume < MaxVolume)
-    //    {
-    //        _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, MaxVolume, _changeVolumeSpeed * Time.deltaTime);
-    //    }
-    //}
 }
