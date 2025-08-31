@@ -25,7 +25,7 @@ public class Thief : MonoBehaviour
 
         transform.position = Vector3.MoveTowards(transform.position, CurrentTarget.position, _stepDistance * Time.deltaTime);
 
-        if (transform.position.x == CurrentTarget.position.x && transform.position.z == CurrentTarget.position.z)
+        if (Mathf.Approximately(transform.position.x, CurrentTarget.position.x) && Mathf.Approximately(transform.position.z, CurrentTarget.position.z))
             SwitchTarget();
     }
 

@@ -1,42 +1,75 @@
+using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource), typeof(Collider))]
+[RequireComponent(typeof(AudioSource))]
 public class Alarm : MonoBehaviour
 {
-    const float MinVolume = 0;
-    const float MaxVolume = 1;
+    private const float MinVolume = 0;
+    private const float MaxVolume = 1;
+    private const float MinTimeStep = 0.1f;
 
-    [SerializeField] private float _changeVolumeSpeed = 0.5f;
+    [SerializeField] private float _changeVolumeDuration = 2f;
 
     private AudioSource _audioSource;
-    private bool _isAlarmOn = false;
+    private float _step;
+    private Coroutine _coroutine;
 
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
+        _step = MinTimeStep / _changeVolumeDuration;
+        Debug.Log(_step);
     }
 
-    private void Update()
+    public void TurnOn()
     {
-        if (_isAlarmOn)
-            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, MaxVolume, _changeVolumeSpeed * Time.deltaTime);
-        else
-            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, MinVolume, _changeVolumeSpeed * Time.deltaTime);
+        Debug.Log("Turned On");
+        
+        if (_coroutine != null)
+            StopCoroutine(_coroutine);
+        
+        _coroutine = StartCoroutine(TurnUpVolume());
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void TurnOff()
     {
-        if (other.TryGetComponent<Thief>(out var thief) == false)
-            return;
-
-        _isAlarmOn = true;
+        Debug.Log("Turned Off");
+        
+        if (_coroutine != null)
+            StopCoroutine(_coroutine);
+        
+        _coroutine = StartCoroutine(TurnDownVolume());
     }
 
-    private void OnTriggerExit(Collider other)
+    private IEnumerator TurnUpVolume()
     {
-        if (other.TryGetComponent<Thief>(out var thief) == false)
-            return;
-
-        _isAlarmOn = false;
+        var wait = new WaitForSeconds(MinTimeStep);
+        
+        while (_audioSource.volume < MaxVolume)
+        {
+            Debug.Log(_audioSource.volume);
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, MaxVolume, _step);
+            yield return wait; 
+        }
     }
+
+    private IEnumerator TurnDownVolume()
+    {
+        var wait = new WaitForSeconds(MinTimeStep);
+        
+        while (_audioSource.volume > MinVolume)
+        {
+            Debug.Log(_audioSource.volume);
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, MinVolume, _step);
+            yield return wait; 
+        }
+    }
+
+    //private IEnumerator VolumeUp()
+    //{
+    //    while (_isAlarmOn && _audioSource.volume < MaxVolume)
+    //    {
+    //        _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, MaxVolume, _changeVolumeSpeed * Time.deltaTime);
+    //    }
+    //}
 }
