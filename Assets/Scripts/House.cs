@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
@@ -10,7 +7,7 @@ public class House : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent<Thief>(out var thief) == false)
+        if (other.TryGetComponent<Thief>(out var _) == false)
             return;
         
         _alarm.TurnOn();
@@ -18,7 +15,7 @@ public class House : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent<Thief>(out var thief) == false)
+        if (other.TryGetComponent<Thief>(out var _) == false)
             return;
         
         _alarm.TurnOff();
